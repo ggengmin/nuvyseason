@@ -2,50 +2,52 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="달래네컷">
 <title>Nuvy Photo × 달래김밥</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --cream: #faf6ef;
+    --bg: #2c2c28;
+    --cream: #fdfbf7;
     --ink: #1a1a18;
     --ink-soft: #3d3d38;
     --ink-muted: #7a7a72;
     --green: #3a5c2e;
-    --green-light: #c8dfc0;
     --border: #c4bfb0;
-    --receipt-bg: #fdfbf7;
   }
 
   body {
-    background: #2c2c28;
+    background: var(--bg);
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    font-family: 'Courier Prime', 'Noto Serif KR', monospace;
-    padding: 20px;
+    font-family: 'Courier Prime', monospace;
+    padding: calc(24px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
   }
 
-  /* ── VIEWFINDER SCREEN ── */
+  /* ────── VIEWFINDER ────── */
   #viewfinder-screen {
     width: 100%;
-    max-width: 420px;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    padding-top: 20px;
   }
 
-  .vf-header {
-    text-align: center;
+  .vf-label {
     color: #faf6ef;
-    letter-spacing: 0.2em;
-    font-size: 11px;
-    opacity: 0.6;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    opacity: 0.5;
   }
 
   .vf-frame {
@@ -53,7 +55,7 @@
     width: 100%;
     aspect-ratio: 3/4;
     background: #111;
-    border: 2px solid #3a5c2e;
+    border: 1.5px solid var(--green);
     overflow: hidden;
   }
 
@@ -62,28 +64,21 @@
     height: 100%;
     object-fit: cover;
     transform: scaleX(-1);
+    display: block;
   }
 
-  .vf-overlay-frame {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  /* corner brackets */
   .vf-corner {
     position: absolute;
-    width: 24px;
-    height: 24px;
-    border-color: #3a5c2e;
+    width: 20px;
+    height: 20px;
+    border-color: var(--green);
     border-style: solid;
-    opacity: 0.8;
+    opacity: 0.9;
   }
-  .vf-corner.tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
-  .vf-corner.tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
-  .vf-corner.bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
-  .vf-corner.br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+  .vf-corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+  .vf-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+  .vf-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+  .vf-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
 
   #countdown-display {
     position: absolute;
@@ -91,377 +86,264 @@
     display: none;
     align-items: center;
     justify-content: center;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.5);
     z-index: 3;
   }
-
   #countdown-display.show { display: flex; }
 
   #countdown-number {
-    font-size: 96px;
+    font-size: 100px;
     font-weight: 700;
-    color: #faf6ef;
-    font-family: 'Courier Prime', monospace;
+    color: #fff;
     animation: pulse 1s ease-in-out;
   }
 
   @keyframes pulse {
-    0% { transform: scale(1.4); opacity: 0; }
-    50% { transform: scale(1.0); opacity: 1; }
-    100% { transform: scale(0.9); opacity: 0.8; }
+    0%   { transform: scale(1.5); opacity: 0; }
+    60%  { transform: scale(1.0); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.7; }
   }
 
   .shoot-btn {
-    width: 72px;
-    height: 72px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    border: 3px solid #3a5c2e;
+    border: 3px solid var(--green);
     background: transparent;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
-    position: relative;
+    transition: all 0.15s;
   }
-
   .shoot-btn::after {
     content: '';
-    width: 52px;
-    height: 52px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: #3a5c2e;
-    transition: all 0.2s;
+    background: var(--green);
+    transition: all 0.15s;
   }
+  .shoot-btn:active::after { width: 42px; height: 42px; background: #2a4a20; }
 
-  .shoot-btn:active::after { width: 44px; height: 44px; background: #2a4a20; }
-  .shoot-btn:hover { border-color: #5a8c4e; }
-  .shoot-btn:hover::after { background: #4a7c3e; }
-
-  /* flash effect */
   .flash-overlay {
     position: fixed;
     inset: 0;
     background: white;
     opacity: 0;
     pointer-events: none;
-    z-index: 100;
-    transition: opacity 0.05s;
+    z-index: 999;
+    transition: opacity 0.04s;
   }
   .flash-overlay.flash { opacity: 1; }
 
-  /* ── RECEIPT SCREEN ── */
+  /* ────── RECEIPT SCREEN ────── */
   #receipt-screen {
     display: none;
     width: 100%;
-    max-width: 400px;
+    max-width: 380px;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
   }
-
   #receipt-screen.show { display: flex; }
 
-  /* the actual receipt */
-  #receipt {
+  #receipt-wrapper {
     width: 100%;
-    background: var(--receipt-bg);
-    position: relative;
-    overflow: hidden;
-    padding: 0 0 28px 0;
-  }
-
-  /* zig-zag top & bottom */
-  .receipt-edge {
-    width: 100%;
-    height: 18px;
-    position: relative;
-  }
-
-  .receipt-edge-top {
-    background: #2c2c28;
-  }
-
-  .receipt-edge-top::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 18px;
-    background: var(--receipt-bg);
-    clip-path: polygon(
-      0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%,
-      12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%,
-      25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%,
-      37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%,
-      50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%,
-      62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%,
-      75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%,
-      87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%
-    );
-  }
-
-  .receipt-edge-bottom {
-    background: var(--receipt-bg);
-  }
-
-  .receipt-edge-bottom::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 18px;
-    background: #2c2c28;
-    clip-path: polygon(
-      0% 0%, 2.5% 100%, 5% 0%, 7.5% 100%, 10% 0%,
-      12.5% 100%, 15% 0%, 17.5% 100%, 20% 0%, 22.5% 100%,
-      25% 0%, 27.5% 100%, 30% 0%, 32.5% 100%, 35% 0%,
-      37.5% 100%, 40% 0%, 42.5% 100%, 45% 0%, 47.5% 100%,
-      50% 0%, 52.5% 100%, 55% 0%, 57.5% 100%, 60% 0%,
-      62.5% 100%, 65% 0%, 67.5% 100%, 70% 0%, 72.5% 100%,
-      75% 0%, 77.5% 100%, 80% 0%, 82.5% 100%, 85% 0%,
-      87.5% 100%, 90% 0%, 92.5% 100%, 95% 0%, 97.5% 100%, 100% 0%
-    );
-  }
-
-  .receipt-body {
-    padding: 20px 28px;
-    position: relative;
-  }
-
-  /* dalrae watermark */
-  .dalrae-watermark {
-    position: absolute;
-    inset: 0;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+  }
+
+  .zz-svg {
+    display: block;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  #receipt-body {
+    background: var(--cream);
+    padding: 18px 26px 22px;
+    position: relative;
+  }
+
+  .dalrae-wm {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55%;
+    opacity: 0.06;
+    filter: grayscale(1);
     pointer-events: none;
     z-index: 0;
-    overflow: hidden;
-  }
-
-  .dalrae-watermark img {
-    width: 75%;
-    max-width: 240px;
-    opacity: 0.07;
-    object-fit: contain;
-    filter: grayscale(1);
   }
 
   .receipt-content { position: relative; z-index: 1; }
 
-  /* header */
-  .receipt-header {
+  .r-header {
     text-align: center;
-    padding-bottom: 16px;
+    padding-bottom: 14px;
     border-bottom: 1px dashed var(--border);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
-
-  .receipt-tag {
-    font-size: 9px;
-    letter-spacing: 0.25em;
+  .r-tag {
+    font-size: 8px;
+    letter-spacing: 0.3em;
     color: var(--green);
     font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
-
-  .receipt-logo {
-    font-size: 15px;
+  .r-logo {
+    font-size: 14px;
     font-weight: 700;
     color: var(--ink);
-    letter-spacing: 0.05em;
-    line-height: 1.3;
+    letter-spacing: 0.04em;
   }
-
-  .receipt-logo span {
-    color: var(--green);
-  }
-
-  .receipt-subtitle {
-    font-size: 9px;
+  .r-logo em { color: var(--green); font-style: normal; }
+  .r-sub {
+    font-size: 8px;
     color: var(--ink-muted);
-    letter-spacing: 0.15em;
-    margin-top: 4px;
+    letter-spacing: 0.18em;
+    margin-top: 3px;
   }
 
-  /* meta */
-  .receipt-meta {
-    font-size: 10px;
-    color: var(--ink-muted);
-    margin-bottom: 16px;
+  .r-meta {
+    font-size: 9.5px;
     line-height: 2;
     border-bottom: 1px dashed var(--border);
-    padding-bottom: 16px;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
   }
+  .r-meta-row { display: flex; justify-content: space-between; }
+  .r-meta-label { color: var(--ink-muted); }
+  .r-meta-val { color: var(--ink-soft); font-weight: 700; }
 
-  .receipt-meta .row {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .receipt-meta .label { color: var(--ink-muted); }
-  .receipt-meta .value { color: var(--ink-soft); font-weight: 700; }
-
-  /* photo area */
-  .receipt-photo-area {
-    margin-bottom: 16px;
-    border: 1.5px solid var(--border);
-    position: relative;
-    background: #111;
+  /* photo — 3:4 fixed, no stretching */
+  .r-photo-wrap {
+    width: 100%;
     aspect-ratio: 3/4;
+    background: #111;
+    border: 1px solid var(--border);
     overflow: hidden;
+    margin-bottom: 14px;
+    position: relative;
   }
-
   #captured-photo {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
 
-  /* photo frame overlay */
-  .photo-frame-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .photo-frame-overlay img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* items */
-  .receipt-items {
+  .r-items {
     border-top: 1px dashed var(--border);
     border-bottom: 1px dashed var(--border);
-    padding: 14px 0;
-    margin-bottom: 16px;
+    padding: 12px 0;
+    margin-bottom: 14px;
   }
-
-  .receipt-item {
+  .r-item {
     display: flex;
-    justify-content: space-between;
     align-items: baseline;
-    font-size: 11px;
-    margin-bottom: 6px;
-    line-height: 1.6;
+    font-size: 10.5px;
+    margin-bottom: 5px;
+    gap: 4px;
   }
-
-  .receipt-item:last-child { margin-bottom: 0; }
-
-  .item-name { color: var(--ink); flex: 1; }
-  .item-dots {
+  .r-item:last-child { margin-bottom: 0; }
+  .r-item-name { color: var(--ink); flex-shrink: 0; }
+  .r-item-dots {
     flex: 1;
     border-bottom: 1px dotted var(--border);
-    margin: 0 6px;
     position: relative;
     top: -3px;
   }
-  .item-price { color: var(--ink); font-weight: 700; white-space: nowrap; }
+  .r-item-price { color: var(--ink); font-weight: 700; flex-shrink: 0; }
 
-  .receipt-total {
+  .r-total {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--ink);
-    margin-top: 10px;
-    padding-top: 10px;
+    margin-top: 8px;
+    padding-top: 8px;
     border-top: 1.5px solid var(--ink);
   }
 
-  /* notices */
-  .receipt-notices {
-    font-size: 9.5px;
-    color: var(--ink-muted);
-    line-height: 2;
-    margin-bottom: 16px;
-    border-bottom: 1px dashed var(--border);
-    padding-bottom: 16px;
-  }
-
-  .receipt-notices p::before { content: '＊ '; }
-
-  /* footer / qr */
-  .receipt-footer {
-    text-align: center;
-  }
-
-  .receipt-footer-text {
-    font-size: 11px;
-    color: var(--ink-soft);
-    letter-spacing: 0.08em;
-    margin-bottom: 14px;
-    line-height: 1.7;
-  }
-
-  #qr-canvas {
-    display: block;
-    margin: 0 auto 12px;
-    border: 1px solid var(--border);
-    padding: 8px;
-    background: white;
-  }
-
-  .receipt-scan-hint {
+  .r-notices {
     font-size: 9px;
     color: var(--ink-muted);
-    letter-spacing: 0.15em;
+    line-height: 2;
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+  }
+  .r-notices p::before { content: '＊ '; }
+
+  #qr-section { text-align: center; }
+  .r-footer-text {
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+    margin-bottom: 12px;
+  }
+  #qr-container {
+    display: inline-block;
+    padding: 8px;
+    background: white;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    min-width: 136px;
+    min-height: 136px;
+    vertical-align: top;
+  }
+  #qr-container canvas, #qr-container img { display: block; }
+  .r-scan-hint {
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
   }
 
-  .receipt-barcode {
-    margin-top: 18px;
+  .r-barcode {
     display: flex;
     justify-content: center;
-    gap: 2px;
-    height: 28px;
     align-items: flex-end;
-    opacity: 0.25;
+    gap: 2px;
+    height: 26px;
+    margin-top: 16px;
+    opacity: 0.2;
   }
-
-  .barcode-bar {
+  .r-barcode span {
     background: var(--ink);
     border-radius: 1px;
+    display: inline-block;
   }
 
-  /* action buttons */
-  .action-buttons {
+  .action-row {
     display: flex;
     gap: 10px;
     width: 100%;
   }
-
   .btn {
     flex: 1;
-    padding: 14px;
+    padding: 13px;
     border: 1.5px solid;
     background: transparent;
     cursor: pointer;
     font-family: 'Courier Prime', monospace;
-    font-size: 11px;
-    letter-spacing: 0.12em;
+    font-size: 10px;
     font-weight: 700;
+    letter-spacing: 0.15em;
     transition: all 0.15s;
   }
+  .btn-save { border-color: var(--green); color: var(--green); }
+  .btn-save:hover { background: var(--green); color: #faf6ef; }
+  .btn-retake { border-color: rgba(250,246,239,0.5); color: rgba(250,246,239,0.7); }
+  .btn-retake:hover { background: rgba(250,246,239,0.08); }
 
-  .btn-primary {
-    border-color: var(--green);
-    color: var(--green);
-  }
-  .btn-primary:hover { background: var(--green); color: #faf6ef; }
-
-  .btn-secondary {
-    border-color: #faf6ef;
-    color: #faf6ef;
-  }
-  .btn-secondary:hover { background: rgba(250,246,239,0.1); }
-
-  /* hidden canvas for capture */
   #capture-canvas { display: none; }
-
 </style>
 </head>
 <body>
@@ -470,131 +352,161 @@
 
 <!-- VIEWFINDER -->
 <div id="viewfinder-screen">
-  <p class="vf-header">≋ NUVY PHOTO × 달래김밥 ≋</p>
-
+  <p class="vf-label">≋ NUVY PHOTO × 달래김밥 ≋</p>
   <div class="vf-frame">
     <video id="live-video" autoplay playsinline muted></video>
-    <div class="vf-overlay-frame">
-      <div class="vf-corner tl"></div>
-      <div class="vf-corner tr"></div>
-      <div class="vf-corner bl"></div>
-      <div class="vf-corner br"></div>
-    </div>
+    <div class="vf-corner tl"></div>
+    <div class="vf-corner tr"></div>
+    <div class="vf-corner bl"></div>
+    <div class="vf-corner br"></div>
     <div id="countdown-display">
       <span id="countdown-number">3</span>
     </div>
   </div>
-
   <button class="shoot-btn" id="shoot-btn" onclick="startCountdown()"></button>
-  <p class="vf-header" style="font-size:10px;">눌러서 촬영</p>
+  <p class="vf-label" style="font-size:9px;">눌러서 촬영</p>
 </div>
 
 <!-- RECEIPT -->
 <div id="receipt-screen">
-  <div id="receipt">
-    <div class="receipt-edge receipt-edge-top"></div>
+  <div id="receipt-wrapper">
 
-    <div class="receipt-body">
-      <div class="dalrae-watermark">
-        <img src="dalea.png" alt="" id="watermark-img" onerror="this.style.display='none'">
-      </div>
+    <!-- zigzag TOP: dark bg → cream teeth -->
+    <svg class="zz-svg" viewBox="0 0 380 16" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="380" height="16" fill="#2c2c28"/>
+      <polygon fill="#fdfbf7" points="
+        0,16 10,0 20,16 30,0 40,16 50,0 60,16 70,0 80,16 90,0
+        100,16 110,0 120,16 130,0 140,16 150,0 160,16 170,0 180,16 190,0
+        200,16 210,0 220,16 230,0 240,16 250,0 260,16 270,0 280,16 290,0
+        300,16 310,0 320,16 330,0 340,16 350,0 360,16 370,0 380,16
+      "/>
+    </svg>
+
+    <div id="receipt-body">
+      <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'">
 
       <div class="receipt-content">
-        <!-- header -->
-        <div class="receipt-header">
-          <p class="receipt-tag">✿ SEASONAL ITEM ✿</p>
-          <p class="receipt-logo">Nuvy Photo <span>×</span> 달래김밥</p>
-          <p class="receipt-subtitle">BUSAN CITIZEN PARK</p>
+
+        <div class="r-header">
+          <p class="r-tag">✿ SEASONAL ITEM ✿</p>
+          <p class="r-logo">Nuvy Photo <em>×</em> 달래김밥</p>
+          <p class="r-sub">BUSAN CITIZEN PARK</p>
         </div>
 
-        <!-- meta -->
-        <div class="receipt-meta">
-          <div class="row">
-            <span class="label">ORDER NO.</span>
-            <span class="value" id="order-no">#0001</span>
+        <div class="r-meta">
+          <div class="r-meta-row">
+            <span class="r-meta-label">ORDER NO.</span>
+            <span class="r-meta-val" id="order-no">#0001</span>
           </div>
-          <div class="row">
-            <span class="label">DATE</span>
-            <span class="value" id="receipt-date">—</span>
+          <div class="r-meta-row">
+            <span class="r-meta-label">DATE</span>
+            <span class="r-meta-val" id="receipt-date">—</span>
           </div>
-          <div class="row">
-            <span class="label">WEATHER</span>
-            <span class="value">봄날의 햇살 ☀</span>
+          <div class="r-meta-row">
+            <span class="r-meta-label">WEATHER</span>
+            <span class="r-meta-val">봄날의 햇살 ☀</span>
           </div>
         </div>
 
-        <!-- photo -->
-        <div class="receipt-photo-area">
+        <div class="r-photo-wrap">
           <img id="captured-photo" src="" alt="photo">
-          <!-- if you have a PNG frame, place dalea.png here as overlay -->
         </div>
 
-        <!-- items -->
-        <div class="receipt-items">
-          <div class="receipt-item">
-            <span class="item-name">알싸한 봄 한 조각</span>
-            <span class="item-dots"></span>
-            <span class="item-price">1컷</span>
+        <div class="r-items">
+          <div class="r-item">
+            <span class="r-item-name">알싸한 봄 한 조각</span>
+            <span class="r-item-dots"></span>
+            <span class="r-item-price">1컷</span>
           </div>
-          <div class="receipt-item">
-            <span class="item-name">달래장 계란말이 추억</span>
-            <span class="item-dots"></span>
-            <span class="item-price">1인분</span>
+          <div class="r-item">
+            <span class="r-item-name">달래장 계란말이 추억</span>
+            <span class="r-item-dots"></span>
+            <span class="r-item-price">1인분</span>
           </div>
-          <div class="receipt-item">
-            <span class="item-name">부가세 (행복 포함)</span>
-            <span class="item-dots"></span>
-            <span class="item-price">100%</span>
+          <div class="r-item">
+            <span class="r-item-name">부가세 (행복 포함)</span>
+            <span class="r-item-dots"></span>
+            <span class="r-item-price">100%</span>
           </div>
-          <div class="receipt-total">
+          <div class="r-total">
             <span>TOTAL</span>
             <span>₩ 0</span>
           </div>
         </div>
 
-        <!-- notices -->
-        <div class="receipt-notices">
+        <div class="r-notices">
           <p>본 상품은 유통기한이 없습니다.</p>
           <p>평생 간직을 권장합니다.</p>
           <p>재료: 달래의 향 + 계란의 고소함.</p>
         </div>
 
-        <!-- footer / qr -->
-        <div class="receipt-footer">
-          <p class="receipt-footer-text">봄을 주머니에 쏙—<br>🌿 스캔하면 저장돼요</p>
-          <canvas id="qr-canvas" width="120" height="120"></canvas>
-          <p class="receipt-scan-hint">SCAN TO DOWNLOAD</p>
-
-          <div class="receipt-barcode" id="barcode"></div>
+        <!-- QR: hidden on download -->
+        <div id="qr-section">
+          <p class="r-footer-text">봄을 주머니에 쏙—<br>🌿 스캔하면 저장돼요</p>
+          <div id="qr-container"></div>
+          <p class="r-scan-hint">SCAN TO DOWNLOAD</p>
+          <div class="r-barcode" id="barcode"></div>
         </div>
+
       </div>
     </div>
 
-    <div class="receipt-edge receipt-edge-bottom"></div>
+    <!-- zigzag BOTTOM: cream → dark -->
+    <svg class="zz-svg" viewBox="0 0 380 16" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="380" height="16" fill="#fdfbf7"/>
+      <polygon fill="#2c2c28" points="
+        0,0 10,16 20,0 30,16 40,0 50,16 60,0 70,16 80,0 90,16
+        100,0 110,16 120,0 130,16 140,0 150,16 160,0 170,16 180,0 190,16
+        200,0 210,16 220,0 230,16 240,0 250,16 260,0 270,16 280,0 290,16
+        300,0 310,16 320,0 330,16 340,0 350,16 360,0 370,16 380,0
+      "/>
+    </svg>
+
   </div>
 
-  <div class="action-buttons">
-    <button class="btn btn-primary" onclick="downloadReceipt()">SAVE RECEIPT</button>
-    <button class="btn btn-secondary" onclick="retake()">RETAKE</button>
+  <div class="action-row">
+    <button class="btn btn-save" onclick="downloadReceipt()">SAVE RECEIPT</button>
+    <button class="btn btn-retake" onclick="retake()">RETAKE</button>
   </div>
 </div>
 
 <canvas id="capture-canvas"></canvas>
 
+<!-- Firebase SDK (ESM) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  // ── 여기에 Firebase config 붙여넣기 ──
+  const firebaseConfig = {
+    apiKey:            "YOUR_API_KEY",
+    authDomain:        "YOUR_AUTH_DOMAIN",
+    projectId:         "YOUR_PROJECT_ID",
+    storageBucket:     "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId:             "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const storage = getStorage(app);
+  window._fb = { storage, ref, uploadBytes, getDownloadURL };
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-  const video = document.getElementById('live-video');
-  const captureCanvas = document.getElementById('capture-canvas');
-  const capturedPhoto = document.getElementById('captured-photo');
-  const countdownDisplay = document.getElementById('countdown-display');
-  const countdownNumber = document.getElementById('countdown-number');
-  const flash = document.getElementById('flash');
-  const shootBtn = document.getElementById('shoot-btn');
-  let stream = null;
+  const video     = document.getElementById('live-video');
+  const capCanvas = document.getElementById('capture-canvas');
+  const photo     = document.getElementById('captured-photo');
+  const cdDisplay = document.getElementById('countdown-display');
+  const cdNumber  = document.getElementById('countdown-number');
+  const flashEl   = document.getElementById('flash');
+  const shootBtn  = document.getElementById('shoot-btn');
+
+  let stream       = null;
   let capturedBlob = null;
-  let orderCount = parseInt(localStorage.getItem('nuvy-order') || '0') + 1;
+  let orderCount   = parseInt(localStorage.getItem('nuvy-order') || '0') + 1;
 
   async function startCamera() {
     try {
@@ -608,128 +520,107 @@
     }
   }
 
-  function setReceiptDate() {
-    const now = new Date();
-    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    const d = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
-    document.getElementById('receipt-date').textContent = d;
-    document.getElementById('order-no').textContent = '#' + String(orderCount).padStart(4,'0');
-  }
-
   function startCountdown() {
     if (!stream) return;
     shootBtn.disabled = true;
     let count = 3;
-    countdownDisplay.classList.add('show');
-    countdownNumber.textContent = count;
-
-    const interval = setInterval(() => {
+    cdDisplay.classList.add('show');
+    cdNumber.textContent = count;
+    const iv = setInterval(() => {
       count--;
       if (count > 0) {
-        countdownNumber.textContent = count;
-        countdownNumber.style.animation = 'none';
-        void countdownNumber.offsetWidth;
-        countdownNumber.style.animation = 'pulse 1s ease-in-out';
+        cdNumber.textContent = count;
+        cdNumber.style.animation = 'none';
+        void cdNumber.offsetWidth;
+        cdNumber.style.animation = 'pulse 1s ease-in-out';
       } else {
-        clearInterval(interval);
-        countdownDisplay.classList.remove('show');
+        clearInterval(iv);
+        cdDisplay.classList.remove('show');
         capturePhoto();
       }
     }, 1000);
   }
 
   function capturePhoto() {
-    flash.classList.add('flash');
-    setTimeout(() => flash.classList.remove('flash'), 150);
-
-    const w = video.videoWidth;
-    const h = video.videoHeight;
-    captureCanvas.width = w;
-    captureCanvas.height = h;
-    const ctx = captureCanvas.getContext('2d');
-    ctx.translate(w, 0);
-    ctx.scale(-1, 1);
+    flashEl.classList.add('flash');
+    setTimeout(() => flashEl.classList.remove('flash'), 150);
+    const w = video.videoWidth, h = video.videoHeight;
+    capCanvas.width = w; capCanvas.height = h;
+    const ctx = capCanvas.getContext('2d');
+    ctx.translate(w, 0); ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, w, h);
-
-    captureCanvas.toBlob(blob => {
+    capCanvas.toBlob(blob => {
       capturedBlob = blob;
-      const url = URL.createObjectURL(blob);
-      capturedPhoto.src = url;
-      capturedPhoto.onload = showReceipt;
+      photo.src = URL.createObjectURL(blob);
+      photo.onload = () => showReceipt();
     }, 'image/jpeg', 0.92);
   }
 
-  function showReceipt() {
-    setReceiptDate();
+  function setMeta() {
+    const now = new Date();
+    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    document.getElementById('receipt-date').textContent =
+      `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} (${days[now.getDay()]})`;
+    document.getElementById('order-no').textContent = '#' + String(orderCount).padStart(4,'0');
+  }
+
+  async function showReceipt() {
+    setMeta();
     localStorage.setItem('nuvy-order', orderCount);
     orderCount++;
-
     document.getElementById('viewfinder-screen').style.display = 'none';
-    document.getElementById('receipt-screen').style.display = 'flex';
-
+    document.getElementById('receipt-screen').classList.add('show');
     generateBarcode();
-    generateQR();
+    await uploadAndQR();
+  }
+
+  async function uploadAndQR() {
+    const qrContainer = document.getElementById('qr-container');
+    qrContainer.innerHTML = '<p style="font-size:9px;color:#7a7a72;padding:8px 4px;">업로드 중...</p>';
+
+    let qrURL = null;
+
+    try {
+      const fb = window._fb;
+      if (!fb || !capturedBlob) throw new Error('no firebase');
+      const storageRef = fb.ref(fb.storage, `photos/${Date.now()}.jpg`);
+      await fb.uploadBytes(storageRef, capturedBlob, { contentType: 'image/jpeg' });
+      qrURL = await fb.getDownloadURL(storageRef);
+    } catch (e) {
+      console.warn('Firebase 미연결 — 로컬 URL 사용:', e.message);
+      qrURL = URL.createObjectURL(capturedBlob);
+    }
+
+    qrContainer.innerHTML = '';
+    new QRCode(qrContainer, {
+      text: qrURL,
+      width: 120,
+      height: 120,
+      colorDark: '#1a1a18',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
   }
 
   function generateBarcode() {
     const bc = document.getElementById('barcode');
     bc.innerHTML = '';
-    const bars = 52;
-    for (let i = 0; i < bars; i++) {
-      const bar = document.createElement('div');
-      bar.className = 'barcode-bar';
-      const h = Math.random() > 0.3 ? (14 + Math.random() * 14) : (6 + Math.random() * 6);
-      bar.style.width = Math.random() > 0.5 ? '2px' : '1px';
-      bar.style.height = h + 'px';
-      bc.appendChild(bar);
+    for (let i = 0; i < 55; i++) {
+      const s = document.createElement('span');
+      s.style.width  = Math.random() > 0.5 ? '2px' : '1px';
+      s.style.height = (Math.random() > 0.3 ? 12 + Math.random()*14 : 5 + Math.random()*6) + 'px';
+      bc.appendChild(s);
     }
-  }
-
-  function generateQR() {
-    const canvas = document.getElementById('qr-canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, 120, 120);
-
-    if (capturedBlob) {
-      const url = URL.createObjectURL(capturedBlob);
-      new QRCode(document.createElement('div'), {
-        text: url,
-        width: 120,
-        height: 120,
-        colorDark: '#1a1a18',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
-
-    // fallback: draw simple QR pattern
-    ctx.fillStyle = '#1a1a18';
-    const size = 10;
-    const pattern = [
-      [1,1,1,1,1,1,1,0,1,0,1,0],
-      [1,0,0,0,0,0,1,0,0,1,0,1],
-      [1,0,1,1,1,0,1,0,1,0,1,0],
-      [1,0,1,1,1,0,1,0,0,1,1,0],
-      [1,0,1,1,1,0,1,0,1,1,0,1],
-      [1,0,0,0,0,0,1,0,0,1,0,1],
-      [1,1,1,1,1,1,1,0,1,0,1,0],
-      [0,0,0,0,0,0,0,0,0,1,0,1],
-      [1,0,1,1,0,1,0,1,1,0,1,0],
-      [0,1,0,0,1,0,1,0,0,1,0,1],
-      [1,0,1,0,1,1,0,1,1,0,1,0],
-      [0,1,0,1,0,0,1,0,0,1,1,1],
-    ];
-    pattern.forEach((row, r) => row.forEach((cell, c) => {
-      if (cell) ctx.fillRect(c * size, r * size, size - 1, size - 1);
-    }));
   }
 
   async function downloadReceipt() {
+    const qrSection = document.getElementById('qr-section');
+    qrSection.style.visibility = 'hidden';
     try {
-      const receipt = document.getElementById('receipt');
-      const canvas = await html2canvas(receipt, {
-        scale: 2,
-        backgroundColor: '#fdfbf7',
+      const wrapper = document.getElementById('receipt-wrapper');
+      const canvas = await html2canvas(wrapper, {
+        scale: 2.5,
+        backgroundColor: null,
         useCORS: true,
         allowTaint: true,
         logging: false
@@ -740,16 +631,24 @@
       link.click();
     } catch (e) {
       alert('저장 중 오류가 발생했어요. 다시 시도해주세요.');
+      console.error(e);
+    } finally {
+      qrSection.style.visibility = 'visible';
     }
   }
 
   function retake() {
     shootBtn.disabled = false;
-    document.getElementById('receipt-screen').style.display = 'none';
+    document.getElementById('receipt-screen').classList.remove('show');
     document.getElementById('viewfinder-screen').style.display = 'flex';
-    capturedPhoto.src = '';
-    if (capturedBlob) { URL.revokeObjectURL(capturedPhoto.src); capturedBlob = null; }
+    photo.src = '';
+    capturedBlob = null;
+    document.getElementById('qr-container').innerHTML = '';
   }
+
+  window.startCountdown  = startCountdown;
+  window.downloadReceipt = downloadReceipt;
+  window.retake          = retake;
 
   window.addEventListener('load', startCamera);
 </script>
