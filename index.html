@@ -630,7 +630,8 @@
         logging: false
       });
 
-      statusEl.textContent = '캡처 완료! 업로드 중...';
+      statusEl.textContent = `canvas: ${canvas.width}x${canvas.height}`;
+      await new Promise(r => setTimeout(r, 3000));
       
       const receiptBlob = await new Promise((resolve, reject) => {
         canvas.toBlob(blob => {
