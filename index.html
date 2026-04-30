@@ -382,11 +382,22 @@
     </svg>
 
     <div id="receipt-body">
-      <img class="dalrae-wm" style="top:10px; left:10px; transform:none; width:30%;" src="dalea.png">
-      <img class="dalrae-wm" style="top:10px; right:10px; left:auto; transform:none; width:30%;">
-                <img class="dalrae-wm" style="bottom:10px; left:10px; transform:none; width:30%;">
-                <img class="dalrae-wm" style="bottom:10px; right:10px; left:auto; transform:none; width:30%;">
+      <!-- 사진 위쪽 2개 -->
+      <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'"
+        style="top:60px; left:8%; width:18%; transform:rotate(-15deg);">
 
+      <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'"
+        style="top:40px; right:6%; width:22%; transform:rotate(20deg);">
+
+      <!-- 사진 아래쪽 3개 -->
+      <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'"
+        style="bottom:180px; left:5%; width:20%; transform:rotate(10deg);">
+
+      <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'"
+        style="bottom:160px; left:50%; transform:translateX(-50%) rotate(-8deg); width:18%;">
+
+      <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'"
+        style="bottom:170px; right:4%; width:22%; transform:rotate(15deg);">
       <div class="receipt-content">
 
         <div class="r-header">
@@ -481,12 +492,12 @@
 
   // ── 여기에 Firebase config 붙여넣기 ──
   const firebaseConfig = {
-    apiKey:            "YOUR_API_KEY",
-    authDomain:        "YOUR_AUTH_DOMAIN",
-    projectId:         "YOUR_PROJECT_ID",
-    storageBucket:     "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId:             "YOUR_APP_ID"
+    apiKey:            "AIzaSyDCNniApykmIrkgpBI4rzhG5JEqvlsjCIc",
+    authDomain:        "nuvyseason.firebaseapp.com",
+    projectId:         "nuvyseason",
+    storageBucket:     "nuvyseason.firebasestorage.app",
+    messagingSenderId: "93515457991",
+    appId:             "1:93515457991:web:6a4c78097a4d201199a5e2"
   };
 
   const app = initializeApp(firebaseConfig);
