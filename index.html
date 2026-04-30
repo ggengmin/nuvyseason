@@ -620,7 +620,7 @@
   // ── 영수증 캡처 → Firebase 업로드 → QR 화면 ──
   async function captureAndUpload() {
     // 버튼 클릭 후 렌더링 완료 기다리기
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 500));
     const statusEl = document.getElementById('qr-status');
     const qrContainer = document.getElementById('qr-container');
 
