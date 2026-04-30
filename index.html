@@ -219,7 +219,7 @@
   /* photo — 3:4 fixed */
   .r-photo-wrap {
     width: 100%;
-    aspect-ratio: 3/4;
+    aspect-ratio: 1/1;
     background: #111;
     border: 1px solid var(--border);
     overflow: hidden;
@@ -369,7 +369,7 @@
   <div id="receipt-wrapper">
 
     <!-- zigzag TOP -->
-    <svg class="zz-svg" viewBox="0 0 340 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- <svg class="zz-svg" viewBox="0 0 340 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="340" height="14" fill="transparent"/>
       <polygon fill="#fdfbf7" points="
         0,14 8.5,0 17,14 25.5,0 34,14 42.5,0 51,14 59.5,0 68,14 76.5,0
@@ -377,7 +377,8 @@
         170,14 178.5,0 187,14 195.5,0 204,14 212.5,0 221,14 229.5,0 238,14 246.5,0
         255,14 263.5,0 272,14 280.5,0 289,14 297.5,0 306,14 314.5,0 323,14 331.5,0 340,14
       "/>
-    </svg>
+    </svg> -->
+    <div style="height:8px; background:var(--cream); border-top: 3px dashed var(--border);"></div>
 
     <div id="receipt-body">
 
@@ -450,7 +451,7 @@
     </div>
 
     <!-- zigzag BOTTOM -->
-    <svg class="zz-svg" viewBox="0 0 340 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- <svg class="zz-svg" viewBox="0 0 340 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <rect width="340" height="14" fill="transparent"/>
       <polygon fill="#fdfbf7" points="
         0,0 8.5,14 17,0 25.5,14 34,0 42.5,14 51,0 59.5,14 68,0 76.5,14
@@ -458,7 +459,9 @@
         170,0 178.5,14 187,0 195.5,14 204,0 212.5,14 221,0 229.5,14 238,0 246.5,14
         255,0 263.5,14 272,0 280.5,14 289,0 297.5,14 306,0 314.5,14 323,0 331.5,14 340,0
       "/>
-    </svg>
+    </svg> -->
+    <div style="height:8px; background:var(--cream); border-bottom: 3px dashed var(--border);"></div>
+
 
   </div>
   <!-- 여기에 버튼 추가! -->
@@ -562,7 +565,7 @@
     const h = video.videoHeight;
 
     let sx = 0, sy = 0, sw = w, sh = h;
-    const targetRatio = 3 / 4;
+    const targetRatio = 1 / 1;
     const currentRatio = w / h;
     if (currentRatio > targetRatio) {
       sw = h * targetRatio;
@@ -572,7 +575,7 @@
       sy = (h - sh) / 2;
     }
 
-    const outW = 600, outH = 800;
+    const outW = 600, outH = 600;
     capCanvas.width = outW;
     capCanvas.height = outH;
     const ctx = capCanvas.getContext('2d');
