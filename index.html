@@ -166,6 +166,9 @@
     overflow: hidden;
   }
 
+  .btn-save { border-color: var(--green); color: var(--green); }
+  .btn-save:hover { background: var(--green); color: #fdfbf7; }
+
   .dalrae-wm {
     position: absolute;
     opacity: 0.12;
@@ -458,7 +461,14 @@
     </svg>
 
   </div>
+  <!-- 여기에 버튼 추가! -->
+  <div class="action-row" style="margin-top:14px;">
+    <button class="btn btn-retake" onclick="retake()">RETAKE</button>
+    <button class="btn btn-save" onclick="captureAndUpload()">NEXT →</button>
+  </div>
 </div>
+
+
 
 <!-- ── QR SCREEN ── -->
 <div id="qr-screen">
@@ -592,17 +602,25 @@
     localStorage.setItem('nuvy-order', orderCount);
     orderCount++;
 
-    // 영수증 화면 잠깐 표시 (캡처용)
     document.getElementById('viewfinder-screen').style.display = 'none';
-    document.getElementById('receipt-screen').classList.add('show');
 
-    // 렌더링 완료 후 캡처
-    await new Promise(r => setTimeout(r, 300));
-    await captureAndUpload();
+    // 사진 로드 확실히 기다리기
+    await new Promise(resolve => {
+      if (photo.complete && photo.naturalWidth > 0) {
+        resolve();
+      } else {
+        photo.onload = resolve;
+      }
+    });
+
+    document.getElementById('receipt-screen').classList.add('show');
+    // 여기서 자동으로 넘어가지 않음 — 버튼 대기
   }
 
   // ── 영수증 캡처 → Firebase 업로드 → QR 화면 ──
   async function captureAndUpload() {
+    // 버튼 클릭 후 렌더링 완료 기다리기
+    await new Promise(r => setTimeout(r, 200));
     const statusEl = document.getElementById('qr-status');
     const qrContainer = document.getElementById('qr-container');
 
