@@ -642,11 +642,8 @@
       
       const receiptBlob = await new Promise((resolve, reject) => {
         canvas.toBlob(blob => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('toBlob 실패 — canvas가 비어있거나 tainted'));
-          }
+          if (blob) resolve(blob);
+          else reject(new Error('toBlob 실패'));
         }, 'image/jpeg', 0.92);
       });
 
