@@ -582,9 +582,11 @@
 
     // blob 대신 dataURL로 바꾸는 부분!
     const dataURL = capCanvas.toDataURL('image/jpeg', 0.92);
-    capturedBlob = dataURL; // 일단 여기 저장
-    photo.src = dataURL;    // img 태그에 바로 꽂기
-    photo.onload = () => showReceipt();
+    capturedBlob = dataURL;
+    photo.src = dataURL;
+    // onload 여기서 제거! showReceipt는 아래서 직접 호출
+    photo.onload = null;
+    showReceipt();
 }
   // ── 영수증 화면 표시 ──
   function setMeta() {
@@ -601,16 +603,6 @@
     orderCount++;
 
     document.getElementById('viewfinder-screen').style.display = 'none';
-
-    // 사진 로드 확실히 기다리기
-    await new Promise(resolve => {
-      if (photo.complete && photo.naturalWidth > 0) {
-        resolve();
-      } else {
-        photo.onload = resolve;
-      }
-    });
-
     document.getElementById('receipt-screen').classList.add('show');
     // 여기서 자동으로 넘어가지 않음 — 버튼 대기
   }
