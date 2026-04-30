@@ -640,6 +640,7 @@
         backgroundColor: '#fdfbf7',
         useCORS: true,
         allowTaint: true,
+        ignoreElements: (el) => el.classList.contains('dalrae-wm'), // 달래 이미지 캡처에서 제외
         logging: false
       });
 
