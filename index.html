@@ -171,9 +171,8 @@
     bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    width: 55%;
+    width: 30%;
     opacity: 0.06;
-    filter: grayscale(1);
     pointer-events: none;
     z-index: 0;
   }
@@ -383,7 +382,10 @@
     </svg>
 
     <div id="receipt-body">
-      <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'">
+      <img class="dalrae-wm" style="top:10px; left:10px; transform:none; width:30%;" src="dalea.png">
+      <img class="dalrae-wm" style="top:10px; right:10px; left:auto; transform:none; width:30%;">
+                <img class="dalrae-wm" style="bottom:10px; left:10px; transform:none; width:30%;">
+                <img class="dalrae-wm" style="bottom:10px; right:10px; left:auto; transform:none; width:30%;">
 
       <div class="receipt-content">
 
