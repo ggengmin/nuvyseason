@@ -397,7 +397,7 @@
         style="bottom:400px; left:50%; transform:translateX(-50%) rotate(-8deg); width:18%;">
 
       <img class="dalrae-wm" src="dalea.png" alt="" onerror="this.style.display='none'"
-        style="bottom:200px; right:5%; width:20%; transform:rotate(15deg);">
+        style="bottom:200px; right:-15%; width:20%; transform:rotate(15deg);">
       <div class="receipt-content">
 
         <div class="r-header">
@@ -594,14 +594,31 @@
     let qrURL = null;
 
     try {
+      // 영수증 전체를 캔버스로 변환
+      const wrapper = document.getElementById('receipt-wrapper');
+      const canvas = await html2canvas(wrapper, {
+        scale: 2,
+        backgroundColor: '#fdfbf7',
+        useCORS: true,
+        allowTaint: true,
+        logging: false
+      });
+
+      // 캔버스 → blob
+      const receiptBlob = await new Promise(resolve =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.92)
+      );
+
       const fb = window._fb;
-      if (!fb || !capturedBlob) throw new Error('no firebase');
-      const storageRef = fb.ref(fb.storage, `photos/${Date.now()}.jpg`);
-      await fb.uploadBytes(storageRef, capturedBlob, { contentType: 'image/jpeg' });
+      if (!fb || !receiptBlob) throw new Error('no firebase');
+
+      const storageRef = fb.ref(fb.storage, `receipts/${Date.now()}.jpg`);
+      await fb.uploadBytes(storageRef, receiptBlob, { contentType: 'image/jpeg' });
       qrURL = await fb.getDownloadURL(storageRef);
+
     } catch (e) {
-      console.warn('Firebase 미연결 — 로컬 URL 사용:', e.message);
-      qrURL = URL.createObjectURL(capturedBlob);
+      console.warn('Firebase fallback:', e.message);
+      qrURL = window.location.href; // fallback
     }
 
     qrContainer.innerHTML = '';
