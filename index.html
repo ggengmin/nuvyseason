@@ -609,19 +609,15 @@
 
   // ── 영수증 캡처 → Firebase 업로드 → QR 화면 ──
   async function captureAndUpload() {
-    await new Promise(r => setTimeout(r, 500));
-    
+    await new Promise(r => setTimeout(r, 300));
+
     const statusEl = document.getElementById('qr-status');
     const qrContainer = document.getElementById('qr-container');
-
-    document.getElementById('receipt-screen').classList.remove('show');
-    document.getElementById('qr-screen').classList.add('show');
     statusEl.textContent = '영수증 생성 중...';
 
     try {
+      // 1. 영수증이 아직 화면에 있을 때 먼저 캡처!
       const wrapper = document.getElementById('receipt-wrapper');
-      statusEl.textContent = 'html2canvas 시작...'; // 단계 표시
-      
       const canvas = await html2canvas(wrapper, {
         scale: 2.5,
         backgroundColor: '#fdfbf7',
@@ -631,8 +627,12 @@
       });
 
       statusEl.textContent = `canvas: ${canvas.width}x${canvas.height}`;
-      await new Promise(r => setTimeout(r, 3000));
-      
+
+      // 2. 캡처 완료 후에 화면 전환
+      document.getElementById('receipt-screen').classList.remove('show');
+      document.getElementById('qr-screen').classList.add('show');
+
+      // 3. blob 변환
       const receiptBlob = await new Promise((resolve, reject) => {
         canvas.toBlob(blob => {
           if (blob) resolve(blob);
@@ -640,15 +640,13 @@
         }, 'image/jpeg', 0.92);
       });
 
-      statusEl.textContent = `blob 크기: ${receiptBlob.size}bytes 업로드 중...`;
-
+      // 4. Firebase 업로드
       const fb = window._fb;
       if (!fb) throw new Error('Firebase 없음!');
-
       const storageRef = fb.ref(fb.storage, `receipts/${Date.now()}.jpg`);
       await fb.uploadBytes(storageRef, receiptBlob, { contentType: 'image/jpeg' });
       const qrURL = await fb.getDownloadURL(storageRef);
-      
+
       statusEl.textContent = 'QR을 스캔해서 저장하세요!';
       new QRCode(qrContainer, {
         text: qrURL,
@@ -660,11 +658,12 @@
       });
 
     } catch (e) {
-      // 에러를 화면에 표시!
       statusEl.textContent = '❌ 에러: ' + e.message;
       console.error(e);
     }
   }
+    
+  
   // ── 재촬영 ──
   function retake() {
     shootBtn.disabled = false;
