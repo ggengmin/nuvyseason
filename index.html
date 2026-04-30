@@ -619,62 +619,59 @@
 
   // ── 영수증 캡처 → Firebase 업로드 → QR 화면 ──
   async function captureAndUpload() {
-    // 버튼 클릭 후 렌더링 완료 기다리기
     await new Promise(r => setTimeout(r, 500));
+    
     const statusEl = document.getElementById('qr-status');
     const qrContainer = document.getElementById('qr-container');
 
-    // QR 화면으로 전환
     document.getElementById('receipt-screen').classList.remove('show');
     document.getElementById('qr-screen').classList.add('show');
     statusEl.textContent = '영수증 생성 중...';
-    qrContainer.innerHTML = '';
-
-    let qrURL = null;
 
     try {
-      // 영수증 캡처
       const wrapper = document.getElementById('receipt-wrapper');
+      statusEl.textContent = 'html2canvas 시작...'; // 단계 표시
+      
       const canvas = await html2canvas(wrapper, {
         scale: 2.5,
         backgroundColor: '#fdfbf7',
         useCORS: true,
         allowTaint: true,
-        ignoreElements: (el) => el.classList.contains('dalrae-wm'), // 달래 이미지 캡처에서 제외
+        ignoreElements: (el) => el.classList.contains('dalrae-wm'),
         logging: false
       });
 
+      statusEl.textContent = '캡처 완료! 업로드 중...';
+      
       const receiptBlob = await new Promise(resolve =>
         canvas.toBlob(resolve, 'image/jpeg', 0.92)
       );
 
-      // Firebase 업로드
-      statusEl.textContent = '업로드 중...';
+      statusEl.textContent = `blob 크기: ${receiptBlob.size}bytes 업로드 중...`;
+
       const fb = window._fb;
-      if (!fb) throw new Error('no firebase');
+      if (!fb) throw new Error('Firebase 없음!');
 
       const storageRef = fb.ref(fb.storage, `receipts/${Date.now()}.jpg`);
       await fb.uploadBytes(storageRef, receiptBlob, { contentType: 'image/jpeg' });
-      qrURL = await fb.getDownloadURL(storageRef);
+      const qrURL = await fb.getDownloadURL(storageRef);
+      
       statusEl.textContent = 'QR을 스캔해서 저장하세요!';
+      new QRCode(qrContainer, {
+        text: qrURL,
+        width: 180,
+        height: 180,
+        colorDark: '#1a1a18',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
 
     } catch (e) {
-      console.warn('Firebase 오류:', e.message);
-      statusEl.textContent = 'QR을 스캔해서 저장하세요!';
-      qrURL = window.location.href;
+      // 에러를 화면에 표시!
+      statusEl.textContent = '❌ 에러: ' + e.message;
+      console.error(e);
     }
-
-    // QR 생성
-    new QRCode(qrContainer, {
-      text: qrURL,
-      width: 180,
-      height: 180,
-      colorDark: '#1a1a18',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
   }
-
   // ── 재촬영 ──
   function retake() {
     shootBtn.disabled = false;
