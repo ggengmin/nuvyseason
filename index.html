@@ -35,15 +35,13 @@
   /* ────── VIEWFINDER ────── */
   #viewfinder-screen {
     width: 100%;
-    max-width: 100%; /* 가로 꽉 차게 */
+    max-width: 600px;
     display: flex;
-    flex-direction: row; /* 세로 → 가로 배치 */
+    flex-direction: column;
     align-items: center;
     gap: 16px;
-    padding: 12px;
-    height: 100vh; /* 화면 꽉 */
+    padding-top: 12px;
   }
-
 
   .vf-label {
     color: var(--ink-muted);
@@ -53,20 +51,11 @@
 
   .vf-frame {
     position: relative;
-    height: 85vh; /* 높이 기준으로 */
-    aspect-ratio: 1/1; /* 1:1 */
+    width: 100%;
+    aspect-ratio: 3/4;
     background: #111;
     border: 1.5px solid var(--green);
     overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  /* 버튼/라벨은 오른쪽에 세로로 */
-  .vf-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
   }
 
   #live-video {
@@ -360,6 +349,7 @@
 
 <!-- ── VIEWFINDER ── -->
 <div id="viewfinder-screen">
+  <p class="vf-label">≋ NUVY PHOTO × 달래김밥 ≋</p>
   <div class="vf-frame">
     <video id="live-video" autoplay playsinline muted></video>
     <div class="vf-corner tl"></div>
@@ -370,11 +360,8 @@
       <span id="countdown-number">3</span>
     </div>
   </div>
-  <div class="vf-controls">
-    <p class="vf-label">≋ NUVY PHOTO<br>× 달래김밥 ≋</p>
-    <button class="shoot-btn" id="shoot-btn" onclick="startCountdown()"></button>
-    <p class="vf-label" style="font-size:8px;">눌러서 촬영</p>
-  </div>
+  <button class="shoot-btn" id="shoot-btn" onclick="startCountdown()"></button>
+  <p class="vf-label" style="font-size:8px;">눌러서 촬영</p>
 </div>
 
 <!-- ── RECEIPT (캡처용 — 촬영 후 잠깐 보임) ── -->
