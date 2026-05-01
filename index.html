@@ -648,7 +648,8 @@
       if (!fb) throw new Error('Firebase 없음!');
       const storageRef = fb.ref(fb.storage, `receipts/${Date.now()}.jpg`);
       await fb.uploadBytes(storageRef, receiptBlob, { contentType: 'image/jpeg' });
-      const qrURL = await fb.getDownloadURL(storageRef);
+      const downloadURL = await fb.getDownloadURL(storageRef);
+      const qrURL = `https://nuvyseason.vercel.app/download.html?img=${encodeURIComponent(downloadURL)}`;
 
       statusEl.textContent = 'QR을 스캔해서 저장하세요!';
       new QRCode(qrContainer, {
