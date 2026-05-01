@@ -203,18 +203,8 @@
 
   async function downloadImage() {
     if (!imageURL) return;
-    try {
-      const res = await fetch(imageURL);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `nuvy-photo-${Date.now()}.jpg`;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      window.open(imageURL, '_blank');
-    }
+    // fetch 버리고 그냥 새 탭으로 열기
+    window.open(imageURL, '_blank');
   }
 
   window.addEventListener('load', loadImage);
