@@ -23,70 +23,57 @@
     background: var(--bg);
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     font-family: 'Courier Prime', monospace;
-    padding: 40px 20px;
+    overflow: hidden;
   }
 
-  .container {
+  /* 영수증 — 처음엔 화면 아래 숨겨져 있음 */
+  .receipt-wrap {
     width: 100%;
-    max-width: 360px;
+    max-width: 380px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.4s ease;
+    padding-bottom: 0;
   }
 
-  /* 로고 */
-  .logo {
-    text-align: center;
-  }
-  .logo-tag {
-    font-size: 8px;
-    letter-spacing: 0.3em;
-    color: var(--green);
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .logo-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--ink);
-    letter-spacing: 0.06em;
-  }
-
-  /* 구분선 */
-  .divider {
-    width: 100%;
-    border: none;
-    border-top: 1px dashed var(--border);
+  .receipt-wrap.visible {
+    transform: translateY(0);
+    opacity: 1;
   }
 
   /* 사진 */
-  .photo-wrap {
-    width: 100%;
-    position: relative;
-    background: #eee;
-    min-height: 160px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   #receipt-img {
     width: 100%;
     display: block;
   }
 
-  .loading-text {
-    color: var(--ink-muted);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    padding: 40px;
+  /* 버튼 + 인스타 — 처음엔 숨김 */
+  .actions {
+    width: 100%;
+    max-width: 380px;
+    padding: 16px 20px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
   }
 
-  /* 다운로드 버튼 */
+  .actions.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   .btn-download {
     width: 100%;
     padding: 14px;
@@ -104,23 +91,15 @@
   .btn-download:active { background: #2a4a20; color: var(--cream); }
   .btn-download:disabled { opacity: 0.4; cursor: default; }
 
-  /* 인스타 */
-  .insta-wrap { text-align: center; }
-  .insta-label {
-    font-size: 8px;
-    color: var(--ink-muted);
-    letter-spacing: 0.2em;
-    margin-bottom: 8px;
-  }
   .insta-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     text-decoration: none;
-    color: var(--ink-soft);
-    font-size: 11px;
+    color: var(--ink-muted);
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     border-bottom: 1px solid var(--border);
     padding-bottom: 2px;
     transition: color 0.15s;
@@ -128,46 +107,58 @@
   .insta-link:hover { color: var(--green); border-color: var(--green); }
 
   .insta-icon {
-    width: 14px;
-    height: 14px;
-    opacity: 0.7;
+    width: 13px;
+    height: 13px;
+    opacity: 0.6;
+  }
+
+  /* 로딩 */
+  .loading-wrap {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    z-index: 10;
+    transition: opacity 0.4s ease;
+  }
+  .loading-wrap.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .loading-text {
+    font-size: 10px;
+    color: var(--ink-muted);
+    letter-spacing: 0.2em;
   }
 </style>
 </head>
 <body>
 
-<div class="container">
+<!-- 로딩 -->
+<div class="loading-wrap" id="loading-wrap">
+  <p class="loading-text">불러오는 중...</p>
+</div>
 
-  <div class="logo">
-    <p class="logo-tag">✿ NUVY PHOTO ✿</p>
-    <p class="logo-title">오늘의 봄을 저장하세요</p>
-  </div>
+<!-- 영수증 이미지 (밑에서 올라옴) -->
+<div class="receipt-wrap" id="receipt-wrap">
+  <img id="receipt-img" src="" alt="영수증">
+</div>
 
-  <hr class="divider">
-
-  <div class="photo-wrap">
-    <p class="loading-text" id="loading">불러오는 중...</p>
-    <img id="receipt-img" src="" alt="영수증" style="display:none;">
-  </div>
-
-  <hr class="divider">
-
+<!-- 버튼 + 인스타 -->
+<div class="actions" id="actions">
   <button class="btn-download" id="download-btn" onclick="downloadImage()" disabled>
     ↓ SAVE RECEIPT
   </button>
-
-  <div class="insta-wrap">
-    <p class="insta-label">FIND US ON INSTAGRAM</p>
-    <a class="insta-link" href="https://www.instagram.com/nuvy.photo/" target="_blank">
-      <svg class="insta-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/>
-        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
-        <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
-      </svg>
-      @nuvy.photo
-    </a>
-  </div>
-
+  <a class="insta-link" href="https://www.instagram.com/nuvy.photo/" target="_blank">
+    <svg class="insta-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="2"/>
+      <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+    </svg>
+    @nuvy.photo
+  </a>
 </div>
 
 <script>
@@ -180,7 +171,7 @@
   async function loadImage() {
     const imgParam = getParam('img');
     if (!imgParam) {
-      document.getElementById('loading').textContent = '이미지 정보가 없습니다.';
+      document.getElementById('loading-wrap').querySelector('.loading-text').textContent = '이미지 정보가 없습니다.';
       return;
     }
 
@@ -188,13 +179,25 @@
     const img = document.getElementById('receipt-img');
 
     img.onload = () => {
-      document.getElementById('loading').style.display = 'none';
-      img.style.display = 'block';
-      document.getElementById('download-btn').disabled = false;
+      // 로딩 숨기기
+      document.getElementById('loading-wrap').classList.add('hidden');
+
+      // 살짝 딜레이 후 영수증 올라오기
+      setTimeout(() => {
+        document.getElementById('receipt-wrap').classList.add('visible');
+      }, 100);
+
+      // 영수증 다 올라오면 버튼 등장
+      setTimeout(() => {
+        document.getElementById('actions').classList.add('visible');
+        document.getElementById('download-btn').disabled = false;
+      }, 1000);
     };
+
     img.onerror = () => {
-      document.getElementById('loading').textContent = '이미지를 불러올 수 없습니다.';
+      document.getElementById('loading-wrap').querySelector('.loading-text').textContent = '이미지를 불러올 수 없습니다.';
     };
+
     img.src = imageURL;
   }
 
@@ -214,7 +217,7 @@
     }
   }
 
-  window.addEventListener('load', () => loadImage());
+  window.addEventListener('load', loadImage);
 </script>
 </body>
 </html>
