@@ -25,48 +25,109 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     font-family: 'Courier Prime', monospace;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
-  /* 영수증 — 처음엔 화면 아래 숨겨져 있음 */
-  .receipt-wrap {
-    width: 100%;
-    max-width: 380px;
+  /* ── 로딩 화면 ── */
+  .loading-wrap {
+    position: fixed;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateY(100%);
+    justify-content: center;
+    background: var(--bg);
+    z-index: 100;
+    gap: 16px;
+    transition: opacity 0.6s ease;
+  }
+  .loading-wrap.hidden {
     opacity: 0;
-    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-                opacity 0.4s ease;
-    padding-bottom: 0;
+    pointer-events: none;
   }
 
-  .receipt-wrap.visible {
-    transform: translateY(0);
-    opacity: 1;
+  .loading-text {
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.25em;
+    animation: blink 1.4s ease-in-out infinite;
   }
 
-  /* 사진 */
+  /* 영수증 프린터 아이콘 */
+  .printer-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .printer-body {
+    width: 48px;
+    height: 32px;
+    background: var(--ink-soft);
+    border-radius: 4px;
+    position: relative;
+  }
+  .printer-paper {
+    width: 32px;
+    height: 0;
+    background: white;
+    border: 1px solid var(--border);
+    margin: 0 auto;
+    animation: paper-out 1.8s ease-in-out infinite;
+    transform-origin: top center;
+    border-radius: 0 0 2px 2px;
+  }
+
+  @keyframes paper-out {
+    0%   { height: 0; }
+    60%  { height: 36px; }
+    80%  { height: 36px; }
+    100% { height: 0; }
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── 영수증 슬롯 (클립 역할) ── */
+  .receipt-slot {
+    width: 100%;
+    max-width: 380px;
+    overflow: hidden; /* 핵심! 여기서 잘려서 올라오는 효과 */
+    position: relative;
+    /* 처음엔 높이 0 → 점점 늘어남 */
+    height: 0;
+    transition: height 2.4s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+  }
+
+  .receipt-slot.rolling {
+    height: var(--target-height, 2000px);
+  }
+
+  /* ── 영수증 이미지 ── */
   #receipt-img {
     width: 100%;
     display: block;
   }
 
-  /* 버튼 + 인스타 — 처음엔 숨김 */
+  /* ── 버튼 영역 ── */
   .actions {
     width: 100%;
     max-width: 380px;
-    padding: 16px 20px 32px;
+    padding: 20px 20px 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 14px;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
     transition: opacity 0.5s ease, transform 0.5s ease;
+    flex-shrink: 0;
   }
 
   .actions.visible {
@@ -111,38 +172,21 @@
     height: 13px;
     opacity: 0.6;
   }
-
-  /* 로딩 */
-  .loading-wrap {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg);
-    z-index: 10;
-    transition: opacity 0.4s ease;
-  }
-  .loading-wrap.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .loading-text {
-    font-size: 10px;
-    color: var(--ink-muted);
-    letter-spacing: 0.2em;
-  }
 </style>
 </head>
 <body>
 
 <!-- 로딩 -->
 <div class="loading-wrap" id="loading-wrap">
-  <p class="loading-text">불러오는 중...</p>
+  <div class="printer-icon">
+    <div class="printer-body"></div>
+    <div class="printer-paper"></div>
+  </div>
+  <p class="loading-text" id="loading-text">영수증을 뽑는 중입니다...</p>
 </div>
 
-<!-- 영수증 이미지 (밑에서 올라옴) -->
-<div class="receipt-wrap" id="receipt-wrap">
+<!-- 영수증 슬롯 (밑에서 위로 주욱 올라옴) -->
+<div class="receipt-slot" id="receipt-slot">
   <img id="receipt-img" src="" alt="영수증">
 </div>
 
@@ -171,31 +215,40 @@
   async function loadImage() {
     const imgParam = getParam('img');
     if (!imgParam) {
-      document.getElementById('loading-wrap').querySelector('.loading-text').textContent = '이미지 정보가 없습니다.';
+      document.getElementById('loading-text').textContent = '이미지 정보가 없습니다.';
       return;
     }
 
     imageURL = decodeURIComponent(imgParam);
     const img = document.getElementById('receipt-img');
+    const slot = document.getElementById('receipt-slot');
 
     img.onload = () => {
+      const imgHeight = img.naturalHeight * (380 / img.naturalWidth);
+
       // 로딩 숨기기
-      document.getElementById('loading-wrap').classList.add('hidden');
-
-      // 살짝 딜레이 후 영수증 올라오기
       setTimeout(() => {
-        document.getElementById('receipt-wrap').classList.add('visible');
-      }, 100);
+        document.getElementById('loading-wrap').classList.add('hidden');
+      }, 600);
 
-      // 영수증 다 올라오면 버튼 등장
+      // 영수증 슬롯 높이를 실제 이미지 높이로 설정 → 주욱 올라옴
+      setTimeout(() => {
+        slot.style.setProperty('--target-height', imgHeight + 'px');
+        slot.style.height = '0';
+        void slot.offsetWidth; // reflow
+        slot.style.transition = 'height 2.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        slot.style.height = imgHeight + 'px';
+      }, 800);
+
+      // 다 올라오면 버튼 등장
       setTimeout(() => {
         document.getElementById('actions').classList.add('visible');
         document.getElementById('download-btn').disabled = false;
-      }, 1000);
+      }, 3400);
     };
 
     img.onerror = () => {
-      document.getElementById('loading-wrap').querySelector('.loading-text').textContent = '이미지를 불러올 수 없습니다.';
+      document.getElementById('loading-text').textContent = '이미지를 불러올 수 없습니다.';
     };
 
     img.src = imageURL;
