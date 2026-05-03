@@ -646,7 +646,7 @@
       // 4. Firebase 업로드
       const fb = window._fb;
       if (!fb) throw new Error('Firebase 없음!');
-      const storageRef = fb.ref(fb.storage, `receipts/${Date.now()}.jpg`);
+      const storageRef = fb.ref(fb.storage, `${Date.now()}.jpg`);
       await fb.uploadBytes(storageRef, receiptBlob, { contentType: 'image/jpeg' });
       const downloadURL = await fb.getDownloadURL(storageRef);
       const qrURL = `https://nuvyseason.vercel.app/download.html?img=${encodeURIComponent(downloadURL)}`;
