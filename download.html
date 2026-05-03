@@ -203,8 +203,21 @@
 
   async function downloadImage() {
     if (!imageURL) return;
-    // fetch 버리고 그냥 새 탭으로 열기
-    window.open(imageURL, '_blank');
+    try {
+      const response = await fetch(imageURL);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = `nuvy-photo-${Date.now()}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error(e);
+      window.open(imageURL, '_blank');
+    }
   }
 
   window.addEventListener('load', loadImage);
