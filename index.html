@@ -289,7 +289,7 @@
   #qr-screen.show { display: flex; }
 
   .qr-title {
-    font-size: 11px;
+    font-size: 25px;
     color: var(--ink-muted);
     letter-spacing: 0.2em;
     text-align: center;
@@ -297,7 +297,7 @@
 
   #qr-container {
     display: inline-block;
-    padding: 12px;
+    padding: 20px;
     background: white;
     border: 1px solid var(--border);
   }
@@ -305,7 +305,7 @@
   #qr-container img { display: block; }
 
   .qr-hint {
-    font-size: 9px;
+    font-size: 15px;
     color: var(--ink-muted);
     letter-spacing: 0.15em;
     text-align: center;
@@ -313,7 +313,7 @@
   }
 
   .qr-status {
-    font-size: 10px;
+    font-size: 15px;
     color: var(--ink-muted);
     text-align: center;
     letter-spacing: 0.1em;
@@ -629,8 +629,6 @@
         logging: false
       });
 
-      statusEl.textContent = `canvas: ${canvas.width}x${canvas.height}`;
-
       // 2. 캡처 완료 후에 화면 전환
       document.getElementById('receipt-screen').classList.remove('show');
       document.getElementById('qr-screen').classList.add('show');
@@ -654,8 +652,8 @@
       statusEl.textContent = 'QR을 스캔해서 저장하세요!';
       new QRCode(qrContainer, {
         text: qrURL,
-        width: 180,
-        height: 180,
+        width: 250,
+        height: 250,
         colorDark: '#1a1a18',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
